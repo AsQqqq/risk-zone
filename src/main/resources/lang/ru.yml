@@ -1,0 +1,19 @@
+command:
+  usage-header: "&6RiskZones - доступные команды:"
+  usage:
+    - "&6/riskzones reload &7- перезагрузить config.yml и файлы перевода"
+    - "&6/riskzones info &7- показать вашу текущую зону"
+    - "&6/riskzones zone <игрок> &7- показать зону другого игрока"
+  unknown-subcommand: "&cНеизвестная подкоманда &f%input%&c."
+  reload-success: "&aRiskZones: конфиг и переводы перезагружены."
+  player-only: "&cЭту подкоманду нужно выполнять от лица игрока."
+  zone-usage: "&cИспользование: /riskzones zone <игрок>"
+  player-not-found: "&cИгрок не найден или не в сети."
+  info-world: "&7Мир: &f%world%"
+  info-zone: "&7Ваша зона: %zone%"
+  info-no-zone: "&7вне зон (без ограничений)"
+  other-player-zone: "&f%player% &7сейчас в зоне: %zone%"
+
+# %developer% подставляется автоматически из credits.developer в config.yml.
+credits:
+  line: "&8▪ &7Разработано: &f%developer%"

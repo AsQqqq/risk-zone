@@ -1,0 +1,314 @@
+# ==========================================================
+#  RiskZones - кастомные зоны в Аду и Энде
+# ==========================================================
+# Зона считается по расстоянию от центра мира в плоскости X/Z (высота Y не
+# учитывается). У каждого мира - свой центр/форма (shape/center-x/center-z)
+# и произвольный список зон-колец вокруг этого центра (worlds.<мир>.zones).
+#
+# У каждой зоны:
+#   from / to   - диапазон дистанции от центра, в котором действует зона.
+#                 to: -1 значит "без верхней границы" (бесконечно) - так
+#                 можно ставить ТОЛЬКО у зоны с максимальным from в мире:
+#                 при загрузке плагин проверяет, что за бесконечной зоной
+#                 не начинается ещё одна (иначе конфиг некорректен, и зоны
+#                 для этого мира отключаются целиком - см. лог при старте).
+#                 Между зонами можно оставлять разрывы (это будет "вне
+#                 зон" - без ограничений), а вот пересекаться зоны не
+#                 могут
+#   display-name/color - цветное короткое имя зоны, для /riskzones info и
+#                 плейсхолдера %zone% в сообщениях команды
+#   disable-flight, strip-potion-effects, blocked-commands,
+#   blocked-command-message, reset-attributes - те же ограничения, что
+#   раньше были только у чёрной зоны, теперь у любой зоны свои
+#   messages.enter - что игрок видит при входе именно в эту зону (текст -
+#                 прямо тут, не в lang/: lang теперь только для системных
+#                 сообщений команды /riskzones)
+#   approach-warning - предупреждение "скоро начнётся эта зона", пока
+#                 игрок ещё не в ней, но подошёл к её from-границе ближе,
+#                 чем "distance" блоков
+#
+# Имя мира - это то, что отдаёт Bukkit World#getName() (обычно "world_nether"
+# и "world_the_end" для дефолтных миров Paper). Проверить точные имена можно
+# командой /riskzones info, стоя в нужном мире. Хочешь ещё зону (не только
+# green/black) - просто добавь ещё один блок под "zones:" со своим id
+
+# Язык системных сообщений команды /riskzones (её ошибки, подсказки,
+# подписи для админов - НЕ тексты зон, они настраиваются ниже в самих
+# зонах). Файлы переводов - в папке lang/ рядом с этим конфигом
+# (lang/ru.yml, lang/en.yml), создаётся сама при первом запуске, можно
+# смело редактировать. Значение ниже - имя файла в lang/ без ".yml"
+language: ru
+
+credits:
+  developer: "Danya"
+  telegram-url: "https://t.me/replace_me"
+  github-url: "https://github.com/replace_me"
+
+worlds:
+  world_nether:
+    enabled: true
+    center-x: 0
+    center-z: 0
+    shape: circle   # circle (окружность) или square (квадрат / чебышёвское расстояние)
+
+    zones:
+      green:
+        from: 0
+        to: 10000
+        display-name: "Зелёная зона"
+        color: "&a"
+
+        disable-flight: false
+        strip-potion-effects: []
+        blocked-commands: []
+        blocked-command-message: "&cКоманда &f/%command% &cнедоступна в этой зоне."
+
+        reset-attributes:
+          enabled: false
+          walk-speed: { enabled: true, value: 0.1, fov: 0.2 }
+          fly-speed: { enabled: true, value: 0.1 }
+          scale: { enabled: true, value: 1.0 }
+
+        messages:
+          enter:
+            chat:
+              enabled: true
+              text: "&aВы вошли в зелёную зону"
+            action-bar:
+              enabled: true
+              text: "&aЗелёная зона"
+            title:
+              enabled: true
+              title: "&a&lЗЕЛЁНАЯ ЗОНА"
+              subtitle: "&7Полёт и команды работают как обычно"
+              fade-in: 10
+              stay: 40
+              fade-out: 10
+            sound:
+              enabled: true
+              name: ENTITY_PLAYER_LEVELUP
+              volume: 0.6
+              pitch: 1.4
+
+        approach-warning:
+          enabled: false   # к зелёной зоне обычно не подходят "снаружи" - включи, если нужно
+
+      black:
+        from: 10000
+        to: -1   # бесконечно - можно, т.к. это зона с максимальным from в этом мире
+        display-name: "Чёрная зона"
+        color: "&4"
+
+        disable-flight: true
+        strip-potion-effects: []
+        blocked-commands:
+          - rtp
+          - spawn
+          - tpa
+          - tpaccept
+          - tpahere
+          - tpdeny
+          - home
+          - sethome
+          - back
+          - warp
+          - fly
+        blocked-command-message: "&cКоманда &f/%command% &cнедоступна в чёрной зоне. Сначала покиньте её"
+
+        reset-attributes:
+          enabled: true
+          walk-speed: { enabled: true, value: 0.1, fov: 0.2 }
+          fly-speed: { enabled: true, value: 0.1 }
+          scale: { enabled: true, value: 1.0 }
+
+        messages:
+          enter:
+            chat:
+              enabled: true
+              text: "&c⚠ Вы вошли в чёрную зону"
+            action-bar:
+              enabled: true
+              text: "&c⚠ Чёрная зона"
+            title:
+              enabled: true
+              title: "&4&lЧЁРНАЯ ЗОНА"
+              subtitle: "&cPvP без пощады. Полёт и команды отключены"
+              fade-in: 10
+              stay: 50
+              fade-out: 15
+            sound:
+              enabled: true
+              name: ENTITY_ELDER_GUARDIAN_CURSE
+              volume: 1.0
+              pitch: 0.8
+
+        approach-warning:
+          enabled: true
+          distance: 500
+          repeat-interval-seconds: 30
+          chat:
+            enabled: true
+            text: "&eВнимание! До чёрной зоны осталось &f%distance% &eблоков"
+          action-bar:
+            enabled: true
+            text: "&e⚠ До чёрной зоны: %distance% блоков"
+          title:
+            enabled: true
+            title: "&e&lОСТОРОЖНО"
+            subtitle: "&7До чёрной зоны: &e%distance% &7блоков"
+            fade-in: 10
+            stay: 40
+            fade-out: 10
+          sound:
+            enabled: true
+            name: BLOCK_NOTE_BLOCK_PLING
+            volume: 0.8
+            pitch: 1.2
+
+  world_the_end:
+    enabled: true
+    center-x: 0
+    center-z: 0
+    shape: circle
+
+    zones:
+      green:
+        from: 0
+        to: 10000
+        display-name: "Зелёная зона"
+        color: "&a"
+
+        disable-flight: false
+        strip-potion-effects: []
+        blocked-commands: []
+        blocked-command-message: "&cКоманда &f/%command% &cнедоступна в этой зоне"
+
+        reset-attributes:
+          enabled: false
+          walk-speed: { enabled: true, value: 0.1, fov: 0.2 }
+          fly-speed: { enabled: true, value: 0.1 }
+          scale: { enabled: true, value: 1.0 }
+
+        messages:
+          enter:
+            chat:
+              enabled: true
+              text: "&aВы вошли в зелёную зону - полёт и команды работают как обычно"
+            action-bar:
+              enabled: true
+              text: "&aЗелёная зона"
+            title:
+              enabled: true
+              title: "&a&lЗЕЛЁНАЯ ЗОНА"
+              subtitle: "&7Полёт и команды работают как обычно"
+              fade-in: 10
+              stay: 40
+              fade-out: 10
+            sound:
+              enabled: true
+              name: ENTITY_PLAYER_LEVELUP
+              volume: 0.6
+              pitch: 1.4
+
+        approach-warning:
+          enabled: false
+
+      black:
+        from: 10000
+        to: -1
+        display-name: "Чёрная зона"
+        color: "&4"
+
+        disable-flight: true
+        strip-potion-effects: []
+        blocked-commands:
+          - rtp
+          - spawn
+          - tpa
+          - tpaccept
+          - tpahere
+          - tpdeny
+          - home
+          - sethome
+          - back
+          - warp
+          - fly
+        blocked-command-message: "&cКоманда &f/%command% &cнедоступна в чёрной зоне. Сначала покиньте её"
+
+        reset-attributes:
+          enabled: true
+          walk-speed: { enabled: true, value: 0.1, fov: 0.2 }
+          fly-speed: { enabled: true, value: 0.1 }
+          scale: { enabled: true, value: 1.0 }
+
+        messages:
+          enter:
+            chat:
+              enabled: true
+              text: "&c⚠ Вы вошли в чёрную зону! Полный риск: PvP без пощады, полёт и команды отключены"
+            action-bar:
+              enabled: true
+              text: "&c⚠ Чёрная зона"
+            title:
+              enabled: true
+              title: "&4&lЧЁРНАЯ ЗОНА"
+              subtitle: "&cPvP без пощады. Полёт и команды отключены"
+              fade-in: 10
+              stay: 50
+              fade-out: 15
+            sound:
+              enabled: true
+              name: ENTITY_ELDER_GUARDIAN_CURSE
+              volume: 1.0
+              pitch: 0.8
+
+        approach-warning:
+          enabled: true
+          distance: 500
+          repeat-interval-seconds: 30
+          chat:
+            enabled: true
+            text: "&eВнимание! До чёрной зоны осталось &f%distance% &eблоков"
+          action-bar:
+            enabled: true
+            text: "&e⚠ До чёрной зоны: %distance% блоков"
+          title:
+            enabled: true
+            title: "&e&lОСТОРОЖНО"
+            subtitle: "&7До чёрной зоны: &e%distance% &7блоков"
+            fade-in: 10
+            stay: 40
+            fade-out: 10
+          sound:
+            enabled: true
+            name: BLOCK_NOTE_BLOCK_PLING
+            volume: 0.8
+            pitch: 1.2
+
+# Сообщение при выходе из ЛЮБОЙ настроенной зоны в "не-зону" (мир без
+# настроенных зон, или разрыв между зонами, если такой есть). Одно на всех
+# - это не зона, а её отсутствие.
+no-zone-messages:
+  chat:
+    enabled: true
+    text: "&7Вы покинули зону риска"
+  action-bar:
+    enabled: true
+    text: "&7Зона риска покинута"
+  title:
+    enabled: true
+    title: "&f&lЗОНА РИСКА ПОКИНУТА"
+    subtitle: "&7Можно выдохнуть"
+    fade-in: 10
+    stay: 30
+    fade-out: 10
+  sound:
+    enabled: true
+    name: ENTITY_EXPERIENCE_ORB_PICKUP
+    volume: 0.6
+    pitch: 1.0
+
+# Как часто (в тиках) допроверять зону таймером, вдобавок к PlayerMoveEvent -
+# подстраховка на случай телепортов сторонними плагинами, которые не шлют
+# стандартные события. 0 - отключить таймер и полагаться только на события
+safety-check-interval-ticks: 100

@@ -1,0 +1,30 @@
+name: RiskZones
+version: '${project.version}'
+main: ru.riskzones.RiskZonesPlugin
+api-version: '1.21'
+author: Danya
+description: 'Зелёная/чёрная зона в Аду и Энде, с возможностью отключения полёта, скорости и размера в чёрной зоне. Также можно отключить команды в чёрной зоне'
+
+commands:
+  riskzones:
+    description: Управление плагином RiskZones
+    aliases: [rz, zones]
+    permission: riskzones.admin
+    usage: /<command> reload | info | zone [игрок]
+
+permissions:
+  riskzones.admin:
+    description: Доступ к /riskzones reload и info
+    default: op
+  riskzones.bypass.commands:
+    description: Команды не блокируются в чёрной зоне
+    default: op
+  riskzones.bypass.flight:
+    description: Полёт не отключается в чёрной зоне
+    default: op
+  riskzones.bypass.attributes:
+    description: Скорость/размер не сбрасываются в чёрной зоне
+    default: op
+  riskzones.notify:
+    description: Получать уведомления о смене зоны и приближении к чёрной (чат / action-bar / title / звук)
+    default: true

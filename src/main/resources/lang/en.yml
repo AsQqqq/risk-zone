@@ -1,0 +1,19 @@
+command:
+  usage-header: "&6RiskZones - available commands:"
+  usage:
+    - "&6/riskzones reload &7- reload config.yml and translation files"
+    - "&6/riskzones info &7- show your current zone"
+    - "&6/riskzones zone <player> &7- show another player's zone"
+  unknown-subcommand: "&cUnknown subcommand &f%input%&c."
+  reload-success: "&aRiskZones: config and translations reloaded."
+  player-only: "&cThis subcommand must be run by a player."
+  zone-usage: "&cUsage: /riskzones zone <player>"
+  player-not-found: "&cPlayer not found or offline."
+  info-world: "&7World: &f%world%"
+  info-zone: "&7Your zone: %zone%"
+  info-no-zone: "&7outside any zone (no restrictions)"
+  other-player-zone: "&f%player% &7is currently in zone: %zone%"
+
+# %developer% is substituted automatically from credits.developer in config.yml.
+credits:
+  line: "&8▪ &7Developed by: &f%developer%"
